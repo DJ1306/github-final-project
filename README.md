@@ -5,7 +5,10 @@ A clean, responsive, and beginner-friendly web application to calculate simple i
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+[![Live Demo](https://img.shields.io/badge/Demo-Live_Preview-success?style=flat&logo=githubpages&logoColor=white)](https://dj1306.github.io/simple-interest-calculator/)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
+
+🌐 **Live Demo:** [https://dj1306.github.io/simple-interest-calculator/](https://dj1306.github.io/simple-interest-calculator/)
 
 ---
 
