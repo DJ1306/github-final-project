@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A modern, responsive Simple Interest Calculator to calculate your interest, total maturity amount, and view yearly growth breakdowns.">
+  <meta name="keywords" content="simple interest calculator, interest calculator, finance tool, loan calculator, savings calculator">
+  <meta name="author" content="DJ1306">
+  <title>Simple Interest Calculator</title>
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+      /* Dark Theme (Default) */
+      --bg-gradient: radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 90.2%);
+      --body-bg: #0b0f19;
+      --card-bg: rgba(17, 24, 39, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(99, 102, 241, 0.3);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      
+      --input-bg: rgba(15, 23, 42, 0.6);
+      --input-border: rgba(255, 255, 255, 0.12);
+      --input-focus: #6366f1;
+
+      --primary: #6366f1;
+      --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+      --primary-hover: #4f46e5;
+      
+      --accent-interest: #10b981;
+      --accent-interest-bg: rgba(16, 185, 129, 0.12);
+      --accent-principal: #6366f1;
+      --accent-principal-bg: rgba(99, 102, 241, 0.12);
+
+      --chip-bg: rgba(255, 255, 255, 0.05);
+      --chip-border: rgba(255, 255, 255, 0.1);
+      --chip-hover: rgba(99, 102, 241, 0.15);
+
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      --shadow-glow: 0 0 35px rgba(99, 102, 241, 0.25);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #f1f5f9 0%, #e2e8f0 100%);
+      --body-bg: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-hover-border: rgba(99, 102, 241, 0.4);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-faint: #94a3b8;
+
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --input-focus: #6366f1;
+
+      --primary: #4f46e5;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --primary-hover: #4338ca;
+
+      --accent-interest: #059669;
+      --accent-interest-bg: rgba(5, 150, 105, 0.12);
+      --accent-principal: #4f46e5;
+      --accent-principal-bg: rgba(79, 70, 229, 0.12);
+
+      --chip-bg: #f1f5f9;
+      --chip-border: #e2e8f0;
+      --chip-hover: rgba(79, 70, 229, 0.1);
+
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--body-bg);
+      background-image: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background Orbs */
+    .glow-orb-1 {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-orb-2 {
+      position: fixed;
+      bottom: -150px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .brand-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .brand-title h1 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-title p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .currency-select, .theme-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.55rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      outline: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .currency-select:hover, .theme-btn:hover {
+      border-color: var(--input-focus);
+    }
+
+    .theme-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    /* Main Grid Layout */
+    .calculator-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.75rem;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .calculator-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .panel-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .label-row label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .input-suffix {
+      position: absolute;
+      right: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      padding-left: 2.2rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      outline: none;
+    }
+
+    input[type="number"].has-suffix {
+      padding-right: 2.5rem;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Remove browser arrows from number input */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* Range Sliders */
+    .slider-container {
+      margin-top: 0.65rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    [data-theme="light"] input[type="range"] {
+      background: #e2e8f0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    /* Quick Preset Chips */
+    .chip-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip:hover {
+      background: var(--chip-hover);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Unit toggle */
+    .unit-toggle {
+      display: inline-flex;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      border-radius: 8px;
+      padding: 2px;
+    }
+
+    .unit-toggle button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .unit-toggle button.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Action Buttons */
+    .btn-group {
+      display: flex;
+      gap: 0.85rem;
+      margin-top: 1.75rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: none;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      background: var(--chip-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      background: var(--chip-hover);
+      color: var(--text-main);
+      border-color: var(--input-border);
+    }
+
+    /* Results Section */
+    .result-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-card {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card.highlight {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .result-card-label {
+      font-size: 0.775rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .result-card-value {
+      font-family: var(--font-heading);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-all;
+    }
+
+    .result-card.interest .result-card-value {
+      color: var(--accent-interest);
+    }
+
+    .result-card.highlight .result-card-value {
+      font-size: 2.1rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Breakdown Bar */
+    .breakdown-box {
+      margin-bottom: 1.5rem;
+    }
+
+    .breakdown-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-container {
+      height: 12px;
+      border-radius: 6px;
+      background: var(--accent-interest);
+      overflow: hidden;
+      display: flex;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-principal);
+      transition: width 0.4s ease;
+    }
+
+    .breakdown-legend {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+    .legend-dot.principal { background: var(--accent-principal); }
+    .legend-dot.interest { background: var(--accent-interest); }
+
+    /* Formula Step-by-Step Card */
+    .formula-card {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    .formula-title {
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .formula-code {
+      font-family: 'Courier New', Courier, monospace;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      color: #38bdf8;
+      margin-bottom: 0.5rem;
+      word-break: break-all;
+    }
+
+    [data-theme="light"] .formula-code {
+      background: #f1f5f9;
+      color: #0284c7;
+    }
+
+    .formula-calc {
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      line-height: 1.4;
+    }
+
+    /* Growth Schedule (Table) */
+    .schedule-section {
+      margin-top: 1.25rem;
+    }
+
+    .schedule-toggle-btn {
+      width: 100%;
+      background: var(--chip-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .schedule-toggle-btn:hover {
+      background: var(--chip-hover);
+    }
+
+    .schedule-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .schedule-content.open {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 0.75rem;
+    }
+
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: right;
+    }
+
+    .schedule-table th, .schedule-table td {
+      padding: 0.55rem 0.6rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .schedule-table th:first-child, .schedule-table td:first-child {
+      text-align: left;
+    }
+
+    .schedule-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .schedule-table td {
+      color: var(--text-main);
+    }
+
+    /* Copy Feedback Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #10b981;
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 0.85rem;
+      z-index: 1;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-orb-1"></div>
+  <div class="glow-orb-2"></div>
+
+  <div class="container">
+    <!-- Top Header Navigation -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+            <line x1="8" y1="6" x2="16" y2="6"></line>
+            <line x1="16" y1="14" x2="16" y2="18"></line>
+            <path d="M16 10h.01"></path>
+            <path d="M12 10h.01"></path>
+            <path d="M8 10h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M8 14h.01"></path>
+            <path d="M12 18h.01"></path>
+            <path d="M8 18h.01"></path>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <h1>Simple Interest Calculator</h1>
+          <p>Instant accurate returns &amp; maturity computation</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Currency Dropdown -->
+        <div class="select-wrapper">
+          <select id="currencySelect" class="currency-select" aria-label="Select Currency">
+            <option value="$" selected>USD ($)</option>
+            <option value="₹">INR (₹)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+            <option value="¥">JPY (¥)</option>
+          </select>
+        </div>
+
+        <!-- Light/Dark Mode Switcher -->
+        <button id="themeToggleBtn" class="theme-btn" aria-label="Toggle Dark/Light Mode" title="Toggle Theme">
+          <svg id="themeIcon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="calculator-layout">
+      <!-- Input Panel -->
+      <section class="panel" aria-labelledby="input-heading">
+        <div class="panel-header">
+          <h2 id="input-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            Investment Parameters
+          </h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Real-time</span>
+        </div>
+
+        <!-- 1. Principal Amount Input -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="principalInput">Principal Amount</label>
+            <span id="principalDisplay" style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">$10,000</span>
+          </div>
+          <div class="input-wrapper">
+            <span class="input-prefix" id="currencyPrefix">$</span>
+            <input type="number" id="principalInput" min="1" max="10000000" step="100" value="10000" placeholder="10000" aria-label="Principal Amount">
+          </div>
+          <div class="slider-container">
+            <input type="range" id="principalSlider" min="1000" max="500000" step="1000" value="10000" aria-label="Principal Slider">
+          </div>
+          <div class="chip-group">
+            <button type="button" class="chip" data-principal="1000">+1,000</button>
+            <button type="button" class="chip" data-principal="5000">+5,000</button>
+            <button type="button" class="chip" data-principal="10000">+10,000</button>
+            <button type="button" class="chip" data-principal="50000">+50,000</button>
+            <button type="button" class="chip" data-principal="100000">+100,000</button>
+          </div>
+        </div>
+
+        <!-- 2. Annual Interest Rate Input -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="rateInput">Annual Interest Rate (% p.a.)</label>
+            <span id="rateDisplay" style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">6.5%</span>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="rateInput" class="has-suffix" min="0.1" max="50" step="0.1" value="6.5" placeholder="6.5" aria-label="Annual Interest Rate">
+            <span class="input-suffix">%</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="rateSlider" min="0.5" max="30" step="0.1" value="6.5" aria-label="Rate Slider">
+          </div>
+          <div class="chip-group">
+            <button type="button" class="chip" data-rate="5">5%</button>
+            <button type="button" class="chip" data-rate="6.5">6.5%</button>
+            <button type="button" class="chip" data-rate="8">8%</button>
+            <button type="button" class="chip" data-rate="10">10%</button>
+            <button type="button" class="chip" data-rate="12">12%</button>
+          </div>
+        </div>
+
+        <!-- 3. Time Period Input -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="timeInput">Time Period</label>
+            <div class="unit-toggle" role="group" aria-label="Time period unit">
+              <button type="button" id="unitYearsBtn" class="active">Years</button>
+              <button type="button" id="unitMonthsBtn">Months</button>
+            </div>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="timeInput" class="has-suffix" min="0.1" max="100" step="0.5" value="3" placeholder="3" aria-label="Time Period">
+            <span class="input-suffix" id="timeUnitSuffix">Years</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="timeSlider" min="0.5" max="30" step="0.5" value="3" aria-label="Time Slider">
+          </div>
+          <div class="chip-group" id="timeChips">
+            <button type="button" class="chip" data-time="1">1 Yr</button>
+            <button type="button" class="chip" data-time="3">3 Yrs</button>
+            <button type="button" class="chip" data-time="5">5 Yrs</button>
+            <button type="button" class="chip" data-time="10">10 Yrs</button>
+            <button type="button" class="chip" data-time="15">15 Yrs</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="btn-group">
+          <button type="button" id="calculateBtn" class="btn btn-primary" id="btn-calc">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Calculate
+          </button>
+          <button type="button" id="resetBtn" class="btn btn-secondary" id="btn-reset">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            Reset
+          </button>
+        </div>
+      </section>
+
+      <!-- Results & Breakdown Panel -->
+      <section class="panel" aria-labelledby="results-heading">
+        <div class="panel-header">
+          <h2 id="results-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Calculation Summary
+          </h2>
+          <button type="button" id="copyBtn" class="chip" title="Copy Calculation Summary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 3px;">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy
+          </button>
+        </div>
+
+        <!-- Result Metric Cards -->
+        <div class="result-cards">
+          <!-- Total Maturity Amount -->
+          <div class="result-card highlight">
+            <span class="result-card-label">Total Maturity Amount</span>
+            <span class="result-card-value" id="totalAmountResult">$11,950.00</span>
+          </div>
+
+          <!-- Simple Interest Earned -->
+          <div class="result-card interest">
+            <span class="result-card-label">Interest Earned (SI)</span>
+            <span class="result-card-value" id="interestResult">$1,950.00</span>
+          </div>
+
+          <!-- Principal Invested -->
+          <div class="result-card">
+            <span class="result-card-label">Principal Invested</span>
+            <span class="result-card-value" id="principalResult">$10,000.00</span>
+          </div>
+        </div>
+
+        <!-- Visual Breakdown Progress Bar -->
+        <div class="breakdown-box">
+          <div class="breakdown-header">
+            <span>Portfolio Breakdown</span>
+            <span id="breakdownPercentage">83.7% Principal / 16.3% Interest</span>
+          </div>
+          <div class="progress-bar-container" title="Visual ratio of Principal to Interest">
+            <div class="progress-bar-fill" id="principalBarFill" style="width: 83.7%;"></div>
+          </div>
+          <div class="breakdown-legend">
+            <div class="legend-item">
+              <div class="legend-dot principal"></div>
+              <span>Principal: <strong id="legendPrincipal">$10,000.00</strong></span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot interest"></div>
+              <span>Interest: <strong id="legendInterest">$1,950.00</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step-by-Step Formula Computation -->
+        <div class="formula-card">
+          <div class="formula-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            Formula &amp; Step-by-Step Solution:
+          </div>
+          <div class="formula-code">Simple Interest = (P × R × T) / 100</div>
+          <div class="formula-calc" id="formulaCalculationStep">
+            SI = (10,000 × 6.5 × 3) / 100 = <strong>$1,950.00</strong><br>
+            Total Amount = Principal + SI = 10,000 + 1,950 = <strong>$11,950.00</strong>
+          </div>
+        </div>
+
+        <!-- Yearly Schedule Accordion -->
+        <div class="schedule-section">
+          <button type="button" class="schedule-toggle-btn" id="scheduleToggleBtn" aria-expanded="false">
+            <span>Annual Growth Breakdown Schedule</span>
+            <span id="scheduleToggleIcon">▼</span>
+          </button>
+          <div class="schedule-content" id="scheduleContent">
+            <table class="schedule-table">
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Opening Bal</th>
+                  <th>Interest</th>
+                  <th>Closing Bal</th>
+                </tr>
+              </thead>
+              <tbody id="scheduleTableBody">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>Simple Interest Calculator &bull; Created with &hearts; by <a href="https://github.com/DJ1306" target="_blank" rel="noopener noreferrer">DJ1306</a></p>
+      <p style="margin-top: 0.35rem; font-size: 0.775rem;">Formula: <em>I = (P × R × T) / 100</em> &bull; Total = <em>P + I</em></p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M20 6L9 17l-5-5"></path>
+    </svg>
+    <span id="toastMsg">Calculation copied to clipboard!</span>
+  </div>
+
+  <script>
+    // --- Application State ---
+    const state = {
+      principal: 10000,
+      rate: 6.5,
+      time: 3,
+      timeUnit: 'years', // 'years' or 'months'
+      currency: '$',
+      isDark: true
+    };
+
+    // --- DOM Elements ---
+    const principalInput = document.getElementById('principalInput');
+    const principalSlider = document.getElementById('principalSlider');
+    const principalDisplay = document.getElementById('principalDisplay');
+
+    const rateInput = document.getElementById('rateInput');
+    const rateSlider = document.getElementById('rateSlider');
+    const rateDisplay = document.getElementById('rateDisplay');
+
+    const timeInput = document.getElementById('timeInput');
+    const timeSlider = document.getElementById('timeSlider');
+    const timeUnitSuffix = document.getElementById('timeUnitSuffix');
+    const unitYearsBtn = document.getElementById('unitYearsBtn');
+    const unitMonthsBtn = document.getElementById('unitMonthsBtn');
+
+    const currencySelect = document.getElementById('currencySelect');
+    const currencyPrefix = document.getElementById('currencyPrefix');
+
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    const totalAmountResult = document.getElementById('totalAmountResult');
+    const interestResult = document.getElementById('interestResult');
+    const principalResult = document.getElementById('principalResult');
+
+    const breakdownPercentage = document.getElementById('breakdownPercentage');
+    const principalBarFill = document.getElementById('principalBarFill');
+    const legendPrincipal = document.getElementById('legendPrincipal');
+    const legendInterest = document.getElementById('legendInterest');
+
+    const formulaCalculationStep = document.getElementById('formulaCalculationStep');
+    const scheduleToggleBtn = document.getElementById('scheduleToggleBtn');
+    const scheduleContent = document.getElementById('scheduleContent');
+    const scheduleToggleIcon = document.getElementById('scheduleToggleIcon');
+    const scheduleTableBody = document.getElementById('scheduleTableBody');
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // --- Format Helper ---
+    function formatMoney(amount, currency = state.currency) {
+      return currency + Number(amount).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // --- Core Calculation Logic ---
+    function computeSimpleInterest() {
+      const P = parseFloat(state.principal) || 0;
+      const R = parseFloat(state.rate) || 0;
+      
+      // Convert time into years for standard formula: SI = (P * R * T) / 100
+      let timeInYears = parseFloat(state.time) || 0;
+      if (state.timeUnit === 'months') {
+        timeInYears = timeInYears / 12;
+      }
+
+      // Simple Interest Formula: (P × R × T) / 100
+      const SI = (P * R * timeInYears) / 100;
+      const totalAmount = P + SI;
+
+      // Update UI Result values
+      principalResult.textContent = formatMoney(P);
+      interestResult.textContent = formatMoney(SI);
+      totalAmountResult.textContent = formatMoney(totalAmount);
+      legendPrincipal.textContent = formatMoney(P);
+      legendInterest.textContent = formatMoney(SI);
+
+      // Update Breakdown Bar
+      let principalPercent = 100;
+      let interestPercent = 0;
+      if (totalAmount > 0) {
+        principalPercent = ((P / totalAmount) * 100).toFixed(1);
+        interestPercent = (100 - principalPercent).toFixed(1);
+      }
+      principalBarFill.style.width = principalPercent + '%';
+      breakdownPercentage.textContent = `${principalPercent}% Principal / ${interestPercent}% Interest`;
+
+      // Update Step-by-Step Display
+      const timeDisplayString = state.timeUnit === 'months' 
+        ? `${state.time} mo (${timeInYears.toFixed(2)} yrs)`
+        : `${state.time} yrs`;
+
+      formulaCalculationStep.innerHTML = `
+        SI = (${state.currency}${P.toLocaleString()} &times; ${R}% &times; ${timeDisplayString}) / 100 = <strong>${formatMoney(SI)}</strong><br>
+        Total Amount = Principal + SI = ${state.currency}${P.toLocaleString()} + ${formatMoney(SI)} = <strong>${formatMoney(totalAmount)}</strong>
+      `;
+
+      // Generate Amortization / Growth Schedule
+      generateSchedule(P, R, timeInYears);
+    }
+
+    // --- Generate Schedule ---
+    function generateSchedule(P, R, totalYears) {
+      scheduleTableBody.innerHTML = '';
+      if (P <= 0 || totalYears <= 0) return;
+
+      const annualInterest = (P * R) / 100;
+      const wholeYears = Math.floor(totalYears);
+      const remainingFraction = totalYears - wholeYears;
+
+      let currentBalance = P;
+
+      for (let y = 1; y <= wholeYears; y++) {
+        const opening = currentBalance;
+        const interestForYear = annualInterest;
+        const closing = opening + interestForYear;
+        currentBalance = closing;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>Year ${y}</td>
+          <td>${formatMoney(opening)}</td>
+          <td>${formatMoney(interestForYear)}</td>
+          <td>${formatMoney(closing)}</td>
+        `;
+        scheduleTableBody.appendChild(row);
+      }
+
+      if (remainingFraction > 0.001) {
+        const remainingMonths = Math.round(remainingFraction * 12);
+        const fractionInterest = annualInterest * remainingFraction;
+        const closing = currentBalance + fractionInterest;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>Remaining (${remainingMonths} mo)</td>
+          <td>${formatMoney(currentBalance)}</td>
+          <td>${formatMoney(fractionInterest)}</td>
+          <td>${formatMoney(closing)}</td>
+        `;
+        scheduleTableBody.appendChild(row);
+      }
+    }
+
+    // --- Input Synchronizers ---
+    function updatePrincipal(val) {
+      val = Math.max(0, parseFloat(val) || 0);
+      state.principal = val;
+      principalInput.value = val;
+      if (val <= parseFloat(principalSlider.max)) {
+        principalSlider.value = val;
+      }
+      principalDisplay.textContent = formatMoney(val);
+      computeSimpleInterest();
+    }
+
+    function updateRate(val) {
+      val = Math.max(0, parseFloat(val) || 0);
+      state.rate = val;
+      rateInput.value = val;
+      if (val <= parseFloat(rateSlider.max)) {
+        rateSlider.value = val;
+      }
+      rateDisplay.textContent = val + '%';
+      computeSimpleInterest();
+    }
+
+    function updateTime(val) {
+      val = Math.max(0.1, parseFloat(val) || 0.1);
+      state.time = val;
+      timeInput.value = val;
+      if (val <= parseFloat(timeSlider.max)) {
+        timeSlider.value = val;
+      }
+      computeSimpleInterest();
+    }
+
+    // --- Event Listeners ---
+    principalInput.addEventListener('input', (e) => updatePrincipal(e.target.value));
+    principalSlider.addEventListener('input', (e) => updatePrincipal(e.target.value));
+
+    rateInput.addEventListener('input', (e) => updateRate(e.target.value));
+    rateSlider.addEventListener('input', (e) => updateRate(e.target.value));
+
+    timeInput.addEventListener('input', (e) => updateTime(e.target.value));
+    timeSlider.addEventListener('input', (e) => updateTime(e.target.value));
+
+    // Preset Chip Clicks
+    document.querySelectorAll('[data-principal]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const add = parseFloat(chip.getAttribute('data-principal'));
+        updatePrincipal((state.principal || 0) + add);
+      });
+    });
+
+    document.querySelectorAll('[data-rate]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const r = parseFloat(chip.getAttribute('data-rate'));
+        updateRate(r);
+      });
+    });
+
+    document.querySelectorAll('[data-time]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const t = parseFloat(chip.getAttribute('data-time'));
+        updateTime(t);
+      });
+    });
+
+    // Time Unit Toggle
+    unitYearsBtn.addEventListener('click', () => {
+      if (state.timeUnit !== 'years') {
+        state.timeUnit = 'years';
+        unitYearsBtn.classList.add('active');
+        unitMonthsBtn.classList.remove('active');
+        timeUnitSuffix.textContent = 'Years';
+        timeSlider.max = 30;
+        timeSlider.step = 0.5;
+        // Convert months to years approximately
+        updateTime(Math.max(1, Math.round((state.time / 12) * 10) / 10));
+      }
+    });
+
+    unitMonthsBtn.addEventListener('click', () => {
+      if (state.timeUnit !== 'months') {
+        state.timeUnit = 'months';
+        unitMonthsBtn.classList.add('active');
+        unitYearsBtn.classList.remove('active');
+        timeUnitSuffix.textContent = 'Months';
+        timeSlider.max = 360;
+        timeSlider.step = 1;
+        // Convert years to months
+        updateTime(Math.round(state.time * 12));
+      }
+    });
+
+    // Currency Switcher
+    currencySelect.addEventListener('change', (e) => {
+      state.currency = e.target.value;
+      currencyPrefix.textContent = state.currency;
+      principalDisplay.textContent = formatMoney(state.principal);
+      computeSimpleInterest();
+    });
+
+    // Reset Button
+    resetBtn.addEventListener('click', () => {
+      state.principal = 10000;
+      state.rate = 6.5;
+      state.time = 3;
+      state.timeUnit = 'years';
+      state.currency = '$';
+      currencySelect.value = '$';
+      currencyPrefix.textContent = '$';
+      unitYearsBtn.classList.add('active');
+      unitMonthsBtn.classList.remove('active');
+      timeUnitSuffix.textContent = 'Years';
+      timeSlider.max = 30;
+      timeSlider.step = 0.5;
+
+      updatePrincipal(10000);
+      updateRate(6.5);
+      updateTime(3);
+
+      showToast('Reset to default values');
+    });
+
+    // Calculate Button (Provides explicit feedback)
+    calculateBtn.addEventListener('click', () => {
+      computeSimpleInterest();
+      showToast('Calculation updated!');
+    });
+
+    // Copy Summary Button
+    copyBtn.addEventListener('click', () => {
+      const P = state.principal;
+      const R = state.rate;
+      const T = state.time;
+      const unit = state.timeUnit;
+      const SI = interestResult.textContent;
+      const Total = totalAmountResult.textContent;
+
+      const summaryText = [
+        '--- Simple Interest Calculation Summary ---',
+        `Principal Amount: ${formatMoney(P)}`,
+        `Annual Interest Rate: ${R}%`,
+        `Time Period: ${T} ${unit}`,
+        `Interest Earned (SI): ${SI}`,
+        `Total Maturity Amount: ${Total}`,
+        `Formula Used: SI = (P × R × T) / 100`,
+        '-------------------------------------------'
+      ].join('\n');
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summaryText)
+          .then(() => showToast('Summary copied to clipboard!'))
+          .catch(() => showToast('Failed to copy.'));
+      } else {
+        showToast('Clipboard not supported in this browser.');
+      }
+    });
+
+    // Schedule Accordion Toggle
+    scheduleToggleBtn.addEventListener('click', () => {
+      const isOpen = scheduleContent.classList.contains('open');
+      if (isOpen) {
+        scheduleContent.classList.remove('open');
+        scheduleToggleBtn.setAttribute('aria-expanded', 'false');
+        scheduleToggleIcon.textContent = '▼';
+      } else {
+        scheduleContent.classList.add('open');
+        scheduleToggleBtn.setAttribute('aria-expanded', 'true');
+        scheduleToggleIcon.textContent = '▲';
+      }
+    });
+
+    // Toast Notification Helper
+    let toastTimeout;
+    function showToast(message) {
+      toastMsg.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // Light / Dark Theme Toggle
+    themeToggleBtn.addEventListener('click', () => {
+      state.isDark = !state.isDark;
+      if (state.isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggleBtn.title = 'Switch to Light Mode';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggleBtn.title = 'Switch to Dark Mode';
+      }
+    });
+
+    // Initial Execution
+    updatePrincipal(state.principal);
+    updateRate(state.rate);
+    updateTime(state.time);
+  </script>
+</body>
+</html>
