@@ -6,7 +6,7 @@ A clean, responsive, and beginner-friendly web application to calculate simple i
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 [![Live Demo](https://img.shields.io/badge/Demo-Live_Preview-success?style=flat&logo=githubpages&logoColor=white)](https://dj1306.github.io/github-final-project/)
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
 🌐 **Live Demo:** [https://dj1306.github.io/github-final-project/](https://dj1306.github.io/github-final-project/)
 
@@ -142,7 +142,7 @@ This project is built using vanilla HTML, CSS, and JavaScript, meaning **no buil
 github-final-project/
 ├── index.html        # Main web application (HTML, CSS & JavaScript)
 ├── README.md         # Documentation, formulas, and usage guide
-├── LICENSE           # MIT License
+├── LICENSE           # Apache License 2.0
 └── .gitignore        # Git ignore rules
 ```
 
@@ -156,4 +156,4 @@ github-final-project/
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE). Feel free to use and adapt it for learning and personal projects.
+This project is licensed under the [Apache License 2.0](LICENSE). Feel free to use and adapt it for learning and personal projects.
